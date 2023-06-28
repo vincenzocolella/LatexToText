@@ -7,6 +7,9 @@ def clean_latex(filepath):
     with open(filepath, 'r', encoding='utf-8', errors='ignore') as f:
         text = f.read()
         
+        pattern22 = r'=([^=]+)=?'
+        text = re.sub(pattern22, r'=', text)
+        
         
         # Remove everything between \newtcblisting{code}[1]{ and }
         pattern5 = r'\\newtcblisting\{code\}\[1\]\{[\s\S]*?\}'
@@ -23,6 +26,9 @@ def clean_latex(filepath):
         # Remove everything between '[' and ']'
         pattern7 = r'(\[).*?(\])'
         text = re.sub(pattern7, r'\1\2', text)
+        
+        pattern21 = r'\\hypersetup.*?\}(?=[^{]*\\)'
+        text = re.sub(pattern21, '', text, flags=re.DOTALL)
         
         # Remove everything between '%\' and '}'
         pattern1 = r'(%\\).*?(})'
@@ -42,15 +48,26 @@ def clean_latex(filepath):
         # Remove everything between '\begin{comment}' and '\end{comment}'
         pattern6 = r'\\begin\{comment\}.*?\\end\{comment\}'
         text = re.sub(pattern6, '', text)
+        
+        
     
         # Remove LaTeX commands
         text = re.sub(r'\\[a-zA-Z]+\*?(?:\[[^\]]*\])?(?:\{[^\}]*\})?', '', text)
 
         # Remove special characters
-        text = text.translate(str.maketrans('', '', string.punctuation))
+        #text = text.translate(str.maketrans('', '', string.punctuation))
 
         # Remove extra whitespace
         text = re.sub(r'\s+', ' ', text)
+        
+        pattern = r'\\[{}\[\]]+|[{}\[\]]+'
+        text = re.sub(pattern, '', text)
+        
+        pattern = r'\$'
+        text = re.sub(pattern, '', text)
+        
+        pattern = r'\\begin\{code\}[\s\S]*?\\end\{code\}'
+        text = re.sub(pattern, '', text)
 
 
     return text
